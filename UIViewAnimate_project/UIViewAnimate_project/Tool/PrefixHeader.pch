@@ -1,0 +1,146 @@
+//
+//  PrefixHeader.pch
+//  UIViewAnimate_project
+//
+//  Created by xiaoli on 2018/8/2.
+//  Copyright © 2018年 雷晓利. All rights reserved.
+//
+
+#ifndef PrefixHeader_pch
+#define PrefixHeader_pch
+
+
+
+#ifdef __OBJC__
+
+#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
+
+
+
+/*
+ *MARK:- 枚举
+ */
+typedef NS_ENUM(NSUInteger, XLAnimateType) {
+    XLAnimateTypeBounds = 0,
+    XLAnimateTypeFrame,
+    XLAnimateTypeCenter,
+    XLAnimateTypeBackgroundColor,
+    XLAnimateTypeAlpha,
+    XLAnimateTypeTransformMoveUp,//上移
+    XLAnimateTypeTransformMoveDown,//下移
+    XLAnimateTypeTransformSlide,//旋转
+    XLAnimateTypeTransformScale,//缩放
+    XLAnimateTypeDamping//阻尼
+};
+
+typedef NS_ENUM(NSUInteger, XLTransitionType) {
+    XLTransitionTypeNone = 0,//没有转场动画效果
+    XLTransitionTypeFlipFromLeft,//从左侧翻转效果
+    XLTransitionTypeFlipFromRight,//从右侧翻转效果
+    XLTransitionTypeCurlUp,//向后翻页的动画过渡效果
+    XLTransitionTypeCurlDown,//向前翻页的动画过渡效果
+    XLTransitionTypeCrossDissolve,//旧视图溶解消失显示下一个新视图的效果
+    XLTransitionTypeFlipFromTop,//从上方翻转效果
+    XLTransitionTypeFlipFromBottom//底部翻转效果
+};
+
+/*
+ *MARK:- 强弱引用
+ */
+#define XLWeakSelf  __weak __typeof(&*self)weakSelf = self;
+#define XLStrongSelf __strong __typeof(&*weakSelf)strongSelf = weakSelf;
+#define XLBlockSelf  __block __typeof(&*self)blockSelf = self;
+
+#define XLWeaType(type)  __weak typeof(type) weak##type = type;
+#define XLStrongType(type)  __strong typeof(type) type = weak##type;
+
+
+
+
+/*
+ *MARK:- 工具类
+ */
+#import "UIButton+Block.h"
+#import "UIView+LYExtension.h"
+
+
+
+/**
+ * MARK:- 中文字体
+ */
+#define CHINESE_FONT_LIGHT_NAME  @"PingFangSC-Light"
+#define CHINESE_FONT_REGULAR_NAME @"PingFangSC-Regular"
+#define CHINESE_FONT_BOLDFONT_NAME @"PingFangSC-Semibold"
+#define CHINESE_FONT_DIN_NAME @"DIN Alternate"
+#define CHINESE_SYSTEM_LIGHT_FONT(x) [UIFont fontWithName:CHINESE_FONT_LIGHT_NAME size:x]
+#define CHINESE_SYSTEM_REGULAR_FONT(x) [UIFont fontWithName:CHINESE_FONT_REGULAR_NAME size:x]
+#define CHINESE_SYSTEM_BOLDFONT_FONT(x) [UIFont fontWithName:CHINESE_FONT_BOLDFONT_NAME size:x]
+#define CHINESE_SYSTEM_DIN_FONT(x) [UIFont fontWithName:CHINESE_FONT_DIN_NAME size:x]
+
+/*
+ *MARK:- 导航栏高度 状态栏高度 底部tabbar高度 苹果X底部安全区高度,iPhoneX判断
+ */
+#pragma mark - 屏幕高度
+#define Main_Screen_Height ([UIScreen mainScreen].bounds.size.height)
+#pragma mark - 屏幕宽度
+#define Main_Screen_Width ([UIScreen mainScreen].bounds.size.width)
+#pragma mark - 导航栏高度 状态栏高度 底部tabbar高度 苹果X底部安全区高度
+#define NavBarHeight ((Main_Screen_Height == 812) ? 88.0 : 64.0)
+#define StatusBarHeight ((Main_Screen_Height == 812) ? 44.0 : 20.0)
+#define TabBarHeight ((Main_Screen_Height == 812) ? 89.0 : 50.0)
+#define SafeTopSpace    ((Main_Screen_Height == 812) ? 24.f : 0.f)
+#define TabBarSafeHeight ((Main_Screen_Height == 812) ? 34.0 : 0.0)
+#define IS_iPhoneX ((Main_Screen_Width == 375.f && Main_Screen_Height == 812.f) ? YES : NO)
+
+
+/**
+ * MARK:- 不同屏幕尺寸字体适配（375，667是因为效果图为IPHONE6 如果不是则根据实际情况修改）
+ */
+#define kScreenWidthRatio  (Main_Screen_Width / 375.0)
+#define kScreenHeightRatio (Main_Screen_Height / 667.0)
+#define AdaptedWidth(x)  ceilf((x) * kScreenWidthRatio)
+#define AdaptedHeight(x) ceilf((x) * kScreenHeightRatio)
+#define AdaptedFontSize(R)     CHINESE_FONT_LIGHT_NAME(AdaptedWidth(R))
+
+
+/**
+ * MARK:- 颜色, 色值
+ */
+#define RGBA(r,g,b,a) [UIColor colorWithRed:r/255.0f green:g/255.0f blue:b/255.0f alpha:a]
+#define RGB(r,g,b) RGBA(r,g,b,1.0f)
+#define HEXCOLOR(hex) [UIColor colorWithRed:((float)((hex & 0xFF0000) >> 16)) / 255.0 green:((float)((hex & 0xFF00) >> 8)) / 255.0 blue:((float)(hex & 0xFF)) / 255.0 alpha:1]
+#define HEXCOLORALPHA(hex,a) [UIColor colorWithRed:((float)((hex & 0xFF0000) >> 16)) / 255.0 green:((float)((hex & 0xFF00) >> 8)) / 255.0 blue:((float)(hex & 0xFF)) / 255.0 alpha:(a)]
+#define COLOR_RGB(rgbValue,a) [UIColor colorWithRed:((float)(((rgbValue) & 0xFF0000) >> 16))/255.0 green:((float)(((rgbValue) & 0xFF00)>>8))/255.0 blue: ((float)((rgbValue) & 0xFF))/255.0 alpha:(a)]
+#define randomColor RGBA(arc4random_uniform(256), arc4random_uniform(256), arc4random_uniform(256), arc4random_uniform(256))
+
+
+/*
+ *MARK:- 弧度角度转换
+ */
+//由角度转换弧度
+#define kDegreesToRadian(x)      (M_PI * (x) / 180.0)
+//由弧度转换角度
+#define kRadianToDegrees(radian) (radian * 180.0) / (M_PI)
+
+/*
+ *MARK:- 获取一段时间间隔
+ */
+#define kStartTime CFAbsoluteTime start = CFAbsoluteTimeGetCurrent();
+#define kEndTime   NSLog(@"Time: %f", CFAbsoluteTimeGetCurrent() - start)
+
+
+/**
+ * MARK:- 打印宏
+ */
+#ifdef DEBUG //开发阶段
+#define NSLog(FORMAT, ...) fprintf(stderr, "%s:%zd\t%s\n", [[[NSString stringWithUTF8String: __FILE__] lastPathComponent] UTF8String], __LINE__, [[NSString stringWithFormat: FORMAT, ## __VA_ARGS__] UTF8String]);
+#else //发布阶段
+#define NSLog(FORMAT, ...)
+#endif
+
+
+
+#endif
+
+#endif /* PrefixHeader_pch */
